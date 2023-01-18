@@ -1,6 +1,11 @@
 package util
 
-import "testing"
+import (
+	"encoding/json"
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+)
 
 func TestGetTypeCount(t *testing.T) {
 	type args struct {
@@ -40,6 +45,31 @@ func TestGetTypeCount(t *testing.T) {
 			if got := GetTypeCount(tt.args.i); got != tt.want {
 				t.Errorf("GetTypeCount() = %v, want %v", got, tt.want)
 			}
+		})
+	}
+}
+
+func TestValidJson(t *testing.T) {
+	tests := []struct {
+		name      string
+		jsonValue json.RawMessage
+		want      bool
+	}{
+		{
+			"successful",
+			[]byte(`{"test": "again"}`),
+			true,
+		},
+		{
+			"failed",
+			[]byte(`{"test": again"}`),
+			false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := ValidJson(tt.jsonValue)
+			assert.Equal(t, tt.want, got, "ValidJson.%s => expected %t; got %t", tt.name, tt.want, got)
 		})
 	}
 }

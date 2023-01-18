@@ -14,7 +14,7 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	log "github.com/sirupsen/logrus"
 	// --- replace migration header once text - do not remove ---
-	// --- replace server header text ---
+	// --- replace main header text - do not remove ---
 )
 
 func main() {
@@ -48,8 +48,7 @@ func main() {
 
 	// set all non-endpoints here
 	e.GET("/", Index)
-	e.HEAD("/server_status", ServerStatus)
-	e.HEAD("/status", ServerStatus)
+	e.GET("/status", ServerStatus)
 
 	InitializeRoutes(e)
 
@@ -70,9 +69,7 @@ func Index(c echo.Context) error {
 }
 
 func ServerStatus(c echo.Context) error {
-	c.Response().Header().Add("GO_API_BASE_SERVICE", config.AppVersion)
-	c.Response().WriteHeader(http.StatusOK)
-	return nil
+	return c.String(http.StatusOK, "live")
 }
 
 func InitializeRoutes(e *echo.Echo) {

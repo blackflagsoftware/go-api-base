@@ -1,4 +1,4 @@
-package shared
+package util
 
 import (
 	"strconv"
@@ -8,13 +8,9 @@ import (
 
 type (
 	Output struct {
-		JsonApi `json:"jsonapi"`
 		Payload interface{} `json:"data,omitempty"`
 		*Error  `json:"error,omitempty"`
-	}
-
-	JsonApi struct {
-		Version string `json:"version"`
+		*Meta   `json:"meta,omitempty"`
 	}
 
 	Error struct {
@@ -23,17 +19,25 @@ type (
 		Detail string `json:"Detail,omitempty"`
 		Status string `json:"Status,omitempty"`
 	}
+
+	Meta struct {
+		TotalCount int `json:"total_count"`
+	}
 )
 
-func NewOutput(payload interface{}, apiError *ae.ApiError) Output {
+func NewOutput(payload interface{}, apiError *ae.ApiError, totalCount *int) Output {
 	var err *Error
+	var meta *Meta
 	if apiError != nil {
 		err = &Error{Id: apiError.ApiErrorCode, Title: apiError.Title, Detail: apiError.Detail, Status: strconv.Itoa(apiError.StatusCode)}
 	}
+	if totalCount != nil {
+		meta = &Meta{TotalCount: *totalCount}
+	}
 	output := Output{
-		JsonApi: JsonApi{Version: "1.0"},
 		Payload: payload,
 		Error:   err,
+		Meta:    meta,
 	}
 	return output
 }
